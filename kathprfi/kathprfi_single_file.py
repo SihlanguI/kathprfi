@@ -94,9 +94,12 @@ def remove_bad_ants(vis):
     return AntList
 
 
-def selection(vis, pol_to_use, corrprod, scan, clean_ants, flag_type):
+def selection(vis, pol, corrprod, scan, clean_ants, flag_type):
     """
     Do subselection of the dataset based on the given parameters.
+    
+    In addition, add target tags to ensure that the selected data is valid and has aleast calibration information
+    We do that by intersecting vis targets-tags with good known good-tags 
 
     Parameters:
     -----------
@@ -118,8 +121,16 @@ def selection(vis, pol_to_use, corrprod, scan, clean_ants, flag_type):
     output : katdal.lazy_indexer.DaskLazyIndexer
         sub selected katdal lazy indexer of RFI flags
     """
+    good_tags = set(["target", "bpcal", "delaycal","fluxcal","gaincal","polcal"])
+    good_targets = []
+    target = vis.catalogue.targets[vis.target_indices[2]]
+    for tar in vis.target_indices:
+        target = vis.catalogue.targets[tar]
+        if len(good_tags.intersection(target.tags))>0:
+                good_targets.append(target)
+    
     vis.select(corrprods=corrprod, pol=pol_to_use, scans=scan, ants=clean_ants,
-               flags=flag_type)
+               flags=flag_type, targets = good_targets)
     flag = vis.flags
     return flag
 

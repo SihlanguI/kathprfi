@@ -1,0 +1,12 @@
+dash
+flask
+gunicorn
+pandas
+plotly
+dask[distributed]
+zarr
+xarray
+matplotlib
+tqdm
+scipy
+statsmodels
